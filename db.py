@@ -1,0 +1,47 @@
+import sqlite3
+
+
+def connect():
+    return sqlite3.connect('data.db')
+
+
+def make_table():
+    conn = connect()
+    conn.execute('create table bindings(wxid TEXT, smd_user, TEXT)')
+    conn.commit()
+    conn.close()
+
+
+def get_binding(wxid: str):
+    conn = connect()
+    cur = conn.cursor()
+    cur.execute('select count(*) from bindings where wxid = ?', wxid)
+    r = cur.fetchall()
+    if r[0][0] != 0:
+        r = cur.execute('select * from bindings where wxid = ?;', wxid).fetchall()[0][1]
+        return r
+    else:
+        conn.close()
+        return 0
+
+
+def unbind(wxid: str):
+    conn = connect()
+    if get_binding(wxid) != 0:
+        cur = conn.cursor()
+        cur.execute('delete from bindings where wxid = ?', wxid)
+        conn.commit()
+        conn.close()
+
+
+def bind(wxid: str, username: str):
+    conn = connect()
+    if get_binding(wxid) != 0:
+        cur = conn.cursor()
+        cur.execute('update bindings set smd_user = ? where wxid = ?', (username, wxid))
+        conn.commit()
+        conn.close()
+    else:
+        conn.execute('insert into bindings values (?, ?)', (wxid, username))
+        conn.commit()
+        conn.close()
