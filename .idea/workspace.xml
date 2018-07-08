@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="12687c81-7937-4604-8527-83992c0d432c" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SMD_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/SMD_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="12687c81-7937-4604-8527-83992c0d432c" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,7 +10,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="5468" />
+    <option name="totalTimeSeconds" value="5488" />
   </component>
   <component name="DatabaseView">
     <option name="SHOW_INTERMEDIATE" value="true" />
@@ -34,7 +28,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="273">
@@ -42,6 +36,15 @@
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SMD_api.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/SMD_api.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="168">
+              <caret line="8" column="26" lean-forward="true" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -76,7 +79,7 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="466" />
     <option name="y" value="-14" />
     <option name="width" value="1824" />
@@ -140,7 +143,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1839" height="1191" extended-state="7" />
+    <frame x="-7" y="-7" width="1839" height="1191" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="12" />
@@ -212,13 +215,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/SMD_api.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="8" column="26" lean-forward="true" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/4094d503-6f31-4c8b-9156-eabcc8dec75f/console.sql">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -239,6 +235,13 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SMD_api.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="8" column="26" lean-forward="true" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
         </state>
       </provider>
     </entry>
