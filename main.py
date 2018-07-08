@@ -1,4 +1,5 @@
 from wxbot import *
+import SMD_api
 
 
 op_status = {}
@@ -10,4 +11,4 @@ class Bot(WXBot):
 
 
 if __name__ == '__main__':
-    pass
+    SMD_api.auth()
