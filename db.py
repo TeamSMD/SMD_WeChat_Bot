@@ -7,7 +7,7 @@ def connect():
 
 def make_table():
     conn = connect()
-    conn.execute('create table bindings(wxid TEXT, smd_user, TEXT)')
+    conn.execute('create table bindings(wxid TEXT, smd_user TEXT)')
     conn.commit()
     conn.close()
 

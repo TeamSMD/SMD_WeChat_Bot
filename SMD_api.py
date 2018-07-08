@@ -15,7 +15,7 @@ def auth():
         print('Auth Failed')
 
 
-def check_password(username: str, password: str):
+def check_password(username: str, password: str)->bool:
     try:
         r = requests.get(REQUSET_URL + '/check_password',
                          {'username': username, 'password': password}, cookies = SESSION_COOKIES)
@@ -35,5 +35,9 @@ def get_coins(username: str)->int:
         return -2
 
 
-def add_value(username: str, coins: int):
+def add_value(username: str, coins: int)->bool:
     r = requests.get(REQUSET_URL + '/add_value', {'username': username, 'coins': coins}, cookies = SESSION_COOKIES)
+    if r.text == 'OK':
+        return True
+    else:
+        return False
