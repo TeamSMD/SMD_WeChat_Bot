@@ -2,7 +2,7 @@ from wxbot import *
 import SMD_api
 
 
-SMD_api = SMD_api.SMDapi()
+SMDapi = SMD_api.SMDapi
 op_status = {}
 bindings = {}
 AwaitQueue = {}
@@ -33,7 +33,7 @@ class Bot(WXBot):
                         self.send_msg_by_uid('你的微信已经绑定了SMD账号了，对我说"解绑"来解除绑定', user_id)
                 elif msg_data == '硬币':
                     if self.check_bind_status(user_id) != '':
-                        self.send_msg_by_uid('你还有 ' + str(SMD_api.get_coins(user_id)) + " 个金币", user_id)
+                        self.send_msg_by_uid('你还有 ' + str(SMDapi.get_coins(user_id)) + " 个金币", user_id)
                     else:
                         self.send_msg_by_uid('客官还没有绑定哦~对我说"绑定"来绑定你的SMD账号吧', user_id)
                 elif msg_data == '充值' or msg_data == '冲值':
@@ -65,7 +65,13 @@ class Bot(WXBot):
                         op_status[user_id] = 'idle'
                         self.send_msg_by_uid('操作取消啦', user_id)
                     else:
-                        pass
+                        if SMDapi.check_user_exists(msg_data):
+                            op_status[user_id] = 'binding_pwd'
+                            self.send_msg_by_uid('密码是多少？', user_id)
+                        else:
+                            self.send_msg_by_uid('用户名不存在，核对一下用户名？或者对我说"取消"来结束操作', user_id)
+                elif op_status[user_id] == 'binding_pwd':
+                    pass
 
 
     def handle_msg_all(self, msg):
@@ -75,6 +81,6 @@ class Bot(WXBot):
 
 
 if __name__ == '__main__':
-    SMD_api.auth()
+    SMDapi = SMD_api.SMDapi()
     bot = Bot()
     bot.run()
