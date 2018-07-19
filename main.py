@@ -33,7 +33,7 @@ class Bot(WXBot):
                         self.send_msg_by_uid('你的微信已经绑定了SMD账号了，对我说"解绑"来解除绑定', user_id)
                 elif msg_data == '硬币':
                     if self.check_bind_status(user_id) != '':
-                        self.send_msg_by_uid('你还有 ' + str(SMDapi.get_coins(user_id)) + " 个金币", user_id)
+                        self.send_msg_by_uid('你还有 ' + str(SMDapi.get_coins(bindings[user_id])) + " 个金币", user_id)
                     else:
                         self.send_msg_by_uid('客官还没有绑定哦~对我说"绑定"来绑定你的SMD账号吧', user_id)
                 elif msg_data == '充值' or msg_data == '冲值':
@@ -56,10 +56,11 @@ class Bot(WXBot):
                         self.send_msg_by_uid('如果你觉得你等了很久还没有轮到你，可以找在场的工作人员哒~', user_id)
                     elif msg_data == '取消':
                         del AwaitQueue[user_id]
+                        op_status[user_id] = 'idle'
                         self.send_msg_by_uid('退出等待队列啦~', user_id)
                     else:
                         self.send_msg_by_uid('麻烦稍等下哦~别人正在付款呢', user_id)
-                        self.send_msg_by_uid('如果你想知道为什么要轮流付款，你可以问我"为什么要付款"', user_id)
+                        self.send_msg_by_uid('如果你想知道为什么要轮流付款，你可以问我"为什么要等"', user_id)
                         self.send_msg_by_uid('我会告诉你的哦~', user_id)
                 # 绑定中
                 elif op_status[user_id] == 'binding':
@@ -69,6 +70,7 @@ class Bot(WXBot):
                     else:
                         if SMDapi.check_user_exists(msg_data):
                             op_status[user_id] = 'binding_pwd'
+                            user_extra[user_id] = {}
                             user_extra[user_id]['bind_username'] = msg_data
                             self.send_msg_by_uid('你的密码是多少？', user_id)
                         else:
@@ -83,13 +85,17 @@ class Bot(WXBot):
                             bindings[user_id] = user_extra[user_id]['bind_username']
                             del user_extra[user_id]
                             self.send_msg_by_uid('绑定成功', user_id)
+                            op_status[user_id] = 'idle'
                         else:
                             self.send_msg_by_uid('密码不对哦~对我说"取消"可以取消操作哦~', user_id)
+        else:
+        # 是新用户
+            op_status[user_id] = 'idle'
+            self.send_msg_by_uid('欢迎~对我说"绑定"来绑定你的SMD账号吧~', user_id)
 
     def handle_msg_all(self, msg):
         if msg['content']['type'] == 0:
-            print(msg['user']['id'] + ': ' + msg['content']['data'])
-            self.send_msg_by_uid('hi', msg['user']['id'])
+            bot.user_msg(msg['content']['data'], msg['user']['id'])
 
 
 if __name__ == '__main__':
