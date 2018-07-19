@@ -1,7 +1,6 @@
 from wxbot import *
 import SMD_api
 
-
 SMDapi = SMD_api.SMDapi
 op_status = {}
 bindings = {}
@@ -10,16 +9,16 @@ user_extra = {}
 
 
 class Bot(WXBot):
-    def check_is_idle(self, user_id):
+    @staticmethod
+    def check_is_idle(user_id):
         return op_status[user_id] == 'idle'
 
-
-    def check_bind_status(self, user_id):
+    @staticmethod
+    def check_bind_status(user_id):
         if user_id in bindings and bindings[user_id] != '':
             return bindings[user_id]
         else:
             return ''
-
 
     def user_msg(self, msg_data, user_id):
         if user_id in op_status:
@@ -50,6 +49,7 @@ class Bot(WXBot):
                     self.send_msg_by_uid('啊？风太大没听清~', user_id)
             else:
                 # 如果在操作期间
+                # 等待支付状态
                 if op_status[user_id] == 'await':
                     if msg_data == '为什么要等':
                         self.send_msg_by_uid('因为如果同时有两个人付款，电脑容易把两个订单弄混哦~', user_id)
@@ -61,6 +61,7 @@ class Bot(WXBot):
                         self.send_msg_by_uid('麻烦稍等下哦~别人正在付款呢', user_id)
                         self.send_msg_by_uid('如果你想知道为什么要轮流付款，你可以问我"为什么要付款"', user_id)
                         self.send_msg_by_uid('我会告诉你的哦~', user_id)
+                # 绑定中
                 elif op_status[user_id] == 'binding':
                     if msg_data == '取消':
                         op_status[user_id] = 'idle'
@@ -72,6 +73,7 @@ class Bot(WXBot):
                             self.send_msg_by_uid('你的密码是多少？', user_id)
                         else:
                             self.send_msg_by_uid('用户名不存在，核对一下用户名？或者对我说"取消"来结束操作', user_id)
+                # 绑定状态，等待验证
                 elif op_status[user_id] == 'binding_pwd':
                     if msg_data == '取消':
                         op_status[user_id] = 'idle'
@@ -81,7 +83,8 @@ class Bot(WXBot):
                             bindings[user_id] = user_extra[user_id]['bind_username']
                             del user_extra[user_id]
                             self.send_msg_by_uid('绑定成功', user_id)
-
+                        else:
+                            self.send_msg_by_uid('密码不对哦~对我说"取消"可以取消操作哦~', user_id)
 
     def handle_msg_all(self, msg):
         if msg['content']['type'] == 0:
