@@ -145,7 +145,7 @@ class WXBot:
         :return: 转换后的Unicode字符串
         """
         if isinstance(string, str):
-            return string.decode(encoding)
+            return string
         elif isinstance(string, str):
             return string
         else:
