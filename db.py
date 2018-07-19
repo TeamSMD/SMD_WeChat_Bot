@@ -12,6 +12,18 @@ def make_table():
     conn.close()
 
 
+def get_bindings():
+    conn = connect()
+    cur = conn.cursor()
+    cur.execute('select count(*) from bindings')
+    r = cur.fetchall()
+    bindings = {}
+    for b in r:
+        bindings[b[0]] = b[1]
+    conn.close()
+    return bindings
+
+
 def get_binding(wxid: str):
     conn = connect()
     cur = conn.cursor()
@@ -45,3 +57,15 @@ def bind(wxid: str, username: str):
         conn.execute('insert into bindings values (?, ?)', (wxid, username))
         conn.commit()
         conn.close()
+
+
+def get_users():
+    conn = connect()
+    cur = conn.cursor()
+    cur.execute('select wxid from bindings')
+    r = cur.fetchall()
+    lst_users = []
+    for u in r:
+        lst_users.append(u[0])
+    conn.close()
+    return lst_users

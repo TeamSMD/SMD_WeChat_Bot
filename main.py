@@ -1,4 +1,5 @@
 from wxbot import *
+import db
 import SMD_api
 
 SMDapi = SMD_api.SMDapi
@@ -44,6 +45,7 @@ class Bot(WXBot):
                 elif msg_data == '解绑':
                     if self.check_bind_status(user_id) != '':
                         bindings[user_id] = ''
+                        db.unbind(user_id)
                         self.send_msg_by_uid('解绑成功', user_id)
                 else:
                     self.send_msg_by_uid('啊？风太大没听清~', user_id)
@@ -82,8 +84,9 @@ class Bot(WXBot):
                         self.send_msg_by_uid('操作取消啦~', user_id)
                     else:
                         if SMDapi.check_password(user_extra[user_id]['bind_username'], msg_data):
-                            bindings[user_id] = user_extra[user_id]['bind_username']
                             del user_extra[user_id]
+                            bindings[user_id] = user_extra[user_id]['bind_username']
+                            db.bind(user_id, user_extra[user_id]['bind_username'])
                             self.send_msg_by_uid('绑定成功', user_id)
                             op_status[user_id] = 'idle'
                         else:
@@ -100,5 +103,10 @@ class Bot(WXBot):
 
 if __name__ == '__main__':
     SMDapi = SMD_api.SMDapi()
+    users = db.get_users()
+    for u in users:
+        op_status[u] = 'idle'
+    del users
+    bindings = db.get_bindings()
     bot = Bot()
     bot.run()
