@@ -50,9 +50,22 @@ class Bot(WXBot):
             else:
                 # 如果在操作期间
                 if op_status[user_id] == 'await':
-                    pass
+                    if msg_data == '为什么要等':
+                        self.send_msg_by_uid('因为如果同时有两个人付款，电脑容易把两个订单弄混哦~', user_id)
+                        self.send_msg_by_uid('如果你觉得你等了很久还没有轮到你，可以找在场的工作人员哒~', user_id)
+                    elif msg_data == '取消':
+                        del AwaitQueue[user_id]
+                        self.send_msg_by_uid('退出等待队列啦~', user_id)
+                    else:
+                        self.send_msg_by_uid('麻烦稍等下哦~别人正在付款呢', user_id)
+                        self.send_msg_by_uid('如果你想知道为什么要轮流付款，你可以问我"为什么要付款"', user_id)
+                        self.send_msg_by_uid('我会告诉你的哦~', user_id)
                 elif op_status[user_id] == 'binding':
-                    pass
+                    if msg_data == '取消':
+                        op_status[user_id] = 'idle'
+                        self.send_msg_by_uid('操作取消啦', user_id)
+                    else:
+                        pass
 
 
     def handle_msg_all(self, msg):
