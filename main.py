@@ -6,6 +6,7 @@ SMDapi = SMD_api.SMDapi
 op_status = {}
 bindings = {}
 AwaitQueue = {}
+user_extra = {}
 
 
 class Bot(WXBot):
@@ -67,11 +68,19 @@ class Bot(WXBot):
                     else:
                         if SMDapi.check_user_exists(msg_data):
                             op_status[user_id] = 'binding_pwd'
-                            self.send_msg_by_uid('密码是多少？', user_id)
+                            user_extra[user_id]['bind_username'] = msg_data
+                            self.send_msg_by_uid('你的密码是多少？', user_id)
                         else:
                             self.send_msg_by_uid('用户名不存在，核对一下用户名？或者对我说"取消"来结束操作', user_id)
                 elif op_status[user_id] == 'binding_pwd':
-                    pass
+                    if msg_data == '取消':
+                        op_status[user_id] = 'idle'
+                        self.send_msg_by_uid('操作取消啦~', user_id)
+                    else:
+                        if SMDapi.check_password(user_extra[user_id]['bind_username'], msg_data):
+                            bindings[user_id] = user_extra[user_id]['bind_username']
+                            del user_extra[user_id]
+                            self.send_msg_by_uid('绑定成功', user_id)
 
 
     def handle_msg_all(self, msg):
