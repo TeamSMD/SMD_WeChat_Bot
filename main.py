@@ -1,6 +1,7 @@
 from wxbot import *
 import db
 import SMD_api
+import logging
 
 SMDapi = SMD_api.SMDapi
 op_status = {}
@@ -22,6 +23,10 @@ class Bot(WXBot):
             return ''
 
     def user_msg(self, msg_data, user_id):
+        print(op_status)
+        print(user_id in op_status)
+        print(user_id)
+
         if user_id in op_status:
             # 如果不是新用户
             if self.check_is_idle(user_id):
@@ -29,7 +34,9 @@ class Bot(WXBot):
                 if msg_data == '绑定':
                     if self.check_bind_status(user_id) == '':
                         op_status[user_id] = 'binding'
-                        self.send_msg_by_uid('你的SMD账号是什么？', user_id)
+                        self.send_msg_by_uid(
+                            '你的SMD账号是什么？如果还没有的话可以去teamsmd.org/artexpo/register注册哦~'
+                            , user_id)
                     else:
                         self.send_msg_by_uid('你的微信已经绑定了SMD账号了，对我说"解绑"来解除绑定', user_id)
                 elif msg_data == '硬币':
@@ -84,7 +91,6 @@ class Bot(WXBot):
                         self.send_msg_by_uid('操作取消啦~', user_id)
                     else:
                         if SMDapi.check_password(user_extra[user_id]['bind_username'], msg_data):
-                            del user_extra[user_id]
                             bindings[user_id] = user_extra[user_id]['bind_username']
                             db.bind(user_id, user_extra[user_id]['bind_username'])
                             self.send_msg_by_uid('绑定成功', user_id)
@@ -92,7 +98,7 @@ class Bot(WXBot):
                         else:
                             self.send_msg_by_uid('密码不对哦~对我说"取消"可以取消操作哦~', user_id)
         else:
-        # 是新用户
+            # 是新用户
             op_status[user_id] = 'idle'
             self.send_msg_by_uid('欢迎~对我说"绑定"来绑定你的SMD账号吧~', user_id)
 
@@ -102,11 +108,13 @@ class Bot(WXBot):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG, filename='log.log')
     SMDapi = SMD_api.SMDapi()
     users = db.get_users()
     for u in users:
         op_status[u] = 'idle'
     del users
+    print(op_status)
     bindings = db.get_bindings()
     bot = Bot()
     bot.run()

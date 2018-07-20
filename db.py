@@ -15,9 +15,11 @@ def make_table():
 def get_bindings():
     conn = connect()
     cur = conn.cursor()
-    cur.execute('select count(*) from bindings')
+    cur.execute('select * from bindings')
     r = cur.fetchall()
     bindings = {}
+    if r.__len__() == 0:
+        return {}
     for b in r:
         bindings[b[0]] = b[1]
     conn.close()
@@ -27,10 +29,10 @@ def get_bindings():
 def get_binding(wxid: str):
     conn = connect()
     cur = conn.cursor()
-    cur.execute('select count(*) from bindings where wxid = ?', wxid)
+    cur.execute('select count(*) from bindings where wxid = ?', (wxid,))
     r = cur.fetchall()
     if r[0][0] != 0:
-        r = cur.execute('select * from bindings where wxid = ?;', wxid).fetchall()[0][1]
+        r = cur.execute('select * from bindings where wxid = ?;', (wxid,)).fetchall()[0][1]
         return r
     else:
         conn.close()
@@ -39,11 +41,11 @@ def get_binding(wxid: str):
 
 def unbind(wxid: str):
     conn = connect()
-    if get_binding(wxid) != 0:
-        cur = conn.cursor()
-        cur.execute('delete from bindings where wxid = ?', wxid)
-        conn.commit()
-        conn.close()
+    cur = conn.cursor()
+    print(wxid)
+    cur.execute('delete from bindings where wxid = ?', (wxid, ))
+    conn.commit()
+    conn.close()
 
 
 def bind(wxid: str, username: str):
@@ -69,3 +71,8 @@ def get_users():
         lst_users.append(u[0])
     conn.close()
     return lst_users
+
+
+if __name__ == '__main__':
+    make_table()
+    print('make table OK')
