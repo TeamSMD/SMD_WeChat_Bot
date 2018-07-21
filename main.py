@@ -25,7 +25,7 @@ def queue_processor():
                 Bot.send_msg_by_uid(Bot(), '轮到你啦~', first_item_key)
                 Bot.send_msg_by_uid(Bot(), '为了不让后面的人等太久，你现在有120秒的时间来完成支付', first_item_key)
                 Bot.send_msg_by_uid(Bot(), '扫描下面的二维码，输入数额来完成充值', first_item_key)
-                Bot.send_img_msg_by_uid(Bot(), 'qrcode.png', first_item_key)
+                Bot.send_img_msg_by_uid(Bot(), 'qrcode.jpg', first_item_key)
                 flag_time_pause = False
         else:
             pass
@@ -152,7 +152,8 @@ class Bot(WXBot):
             if match and AwaitQueue.__len__() != 0:
                 print('recv ' + match[0])
                 SMDapi.add_value(bindings[AwaitQueue[list(AwaitQueue.keys())[0]]], int(match[0]))
-                Bot.send_msg_by_uid()
+                Bot.send_msg_by_uid(Bot(), '支付成功，收到了你的 ' + str(int(match[0])) + 'rmb',AwaitQueue[list(AwaitQueue.keys())[0]])
+                Bot.send_msg_by_uid(Bot(), '谢谢你嗷~',AwaitQueue[list(AwaitQueue.keys())[0]])
             flag_time_pause = False
 
 
