@@ -150,10 +150,11 @@ class Bot(WXBot):
             flag_time_pause = True
             match = re.findall(r'微信支付收款(.+?)元', msg['content']['data']['title'])
             if match and AwaitQueue.__len__() != 0:
-                print('recv ' + match[0])
+                print('rec ' + match[0])
                 SMDapi.add_value(bindings[AwaitQueue[list(AwaitQueue.keys())[0]]], int(match[0]))
-                Bot.send_msg_by_uid(Bot(), '支付成功，收到了你的 ' + str(int(match[0])) + 'rmb',AwaitQueue[list(AwaitQueue.keys())[0]])
-                Bot.send_msg_by_uid(Bot(), '谢谢你嗷~',AwaitQueue[list(AwaitQueue.keys())[0]])
+                Bot.send_msg_by_uid(Bot(), '支付成功，收到了你的 ' + str(int(match[0])) + 'rmb',
+                                    AwaitQueue[list(AwaitQueue.keys())[0]])
+                Bot.send_msg_by_uid(Bot(), '谢谢你嗷~', AwaitQueue[list(AwaitQueue.keys())[0]])
             flag_time_pause = False
 
 
