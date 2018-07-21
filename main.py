@@ -2,12 +2,18 @@ from wxbot import *
 import db
 import SMD_api
 import logging
+import time
 
 SMDapi = SMD_api.SMDapi
 op_status = {}
 bindings = {}
 AwaitQueue = {}
 user_extra = {}
+
+
+def queue_processor():
+    while True:
+        time.sleep(1)
 
 
 class Bot(WXBot):
@@ -35,8 +41,7 @@ class Bot(WXBot):
                     if self.check_bind_status(user_id) == '':
                         op_status[user_id] = 'binding'
                         self.send_msg_by_uid(
-                            '你的SMD账号是什么？如果还没有的话可以去teamsmd.org/artexpo/register注册哦~'
-                            , user_id)
+                            '你的SMD账号是什么？如果还没有的话可以去teamsmd.org/artexpo/register注册哦~', user_id)
                     else:
                         self.send_msg_by_uid('你的微信已经绑定了SMD账号了，对我说"解绑"来解除绑定', user_id)
                 elif msg_data == '硬币':
@@ -109,7 +114,17 @@ class Bot(WXBot):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG, filename='log.log')
-    SMDapi = SMD_api.SMDapi()
+    try:
+        SMDapi = SMD_api.SMDapi()
+    except Exception:
+        print('Auth Failed')
+        cont = input('continue?')
+        if cont.lower() == 'n':
+            exit(0)
+        elif cont.lower() == 'y':
+            pass
+        else:
+            print('fuck you')
     users = db.get_users()
     for u in users:
         op_status[u] = 'idle'
@@ -118,3 +133,4 @@ if __name__ == '__main__':
     bindings = db.get_bindings()
     bot = Bot()
     bot.run()
+    print('sb')

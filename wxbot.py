@@ -811,6 +811,8 @@ class WXBot:
                     print('[DEBUG] sync_check:', retcode, selector)
                     time.sleep(10)
                 self.schedule()
+            except KeyboardInterrupt:
+                exit(0)
             except:
                 print('[ERROR] Except in proc_msg')
                 print(format_exc())
@@ -1060,7 +1062,7 @@ class WXBot:
                 return None
             mid = json.loads(r.text)['MediaId']
             return mid
-        except Exception as e:
+        except Exception:
             return None
 
     def send_file_msg_by_uid(self, fpath, uid):
@@ -1382,10 +1384,12 @@ class WXBot:
             r = self.session.get(url, timeout=60)
             r.encoding = 'utf-8'
             data = r.text
-            pm = re.search(r'window.synccheck=\{retcode:"(\d+)",selector:"(\d+)"\}', data)
+            pm = re.search(r'window.synccheck={retcode:"(\d+)",selector:"(\d+)"\}', data)
             retcode = pm.group(1)
             selector = pm.group(2)
             return [retcode, selector]
+        except KeyboardInterrupt:
+            exit(0)
         except:
             return [-1, -1]
 
@@ -1406,6 +1410,8 @@ class WXBot:
                 self.sync_key_str = '|'.join([str(keyVal['Key']) + '_' + str(keyVal['Val'])
                                               for keyVal in self.sync_key['List']])
             return dic
+        except KeyboardInterrupt:
+            exit(0)
         except:
             return None
 
