@@ -3,16 +3,48 @@ import db
 import SMD_api
 import logging
 import time
+import threading
+import re
 
 SMDapi = SMD_api.SMDapi
 op_status = {}
 bindings = {}
 AwaitQueue = {}
 user_extra = {}
+flag_time_pause = False
 
 
 def queue_processor():
+    global flag_time_pause
+
     while True:
+        if AwaitQueue.__len__() != 0:
+            first_item_key = AwaitQueue[list(AwaitQueue.keys())[0]]
+            if AwaitQueue[first_item_key] >= 120:
+                flag_time_pause = True
+                Bot.send_msg_by_uid(Bot(), '轮到你啦~', first_item_key)
+                Bot.send_msg_by_uid(Bot(), '为了不让后面的人等太久，你现在有120秒的时间来完成支付', first_item_key)
+                Bot.send_msg_by_uid(Bot(), '扫描下面的二维码，输入数额来完成充值', first_item_key)
+                Bot.send_img_msg_by_uid(Bot(), 'qrcode.png', first_item_key)
+                flag_time_pause = False
+        else:
+            pass
+
+        time.sleep(0.1)
+
+
+def queue_time_man():
+    global flag_time_pause
+
+    while True:
+        if not flag_time_pause:
+            if AwaitQueue.__len__() != 0:
+                if AwaitQueue[list(AwaitQueue.keys())[0]] > 0:
+                    AwaitQueue[list(AwaitQueue.keys())[0]] -= 1
+                else:
+                    Bot.send_msg_by_uid(Bot(), '支付超时啦，要重新排队哦~下次要抓紧时间呀', list(AwaitQueue.keys())[0])
+                    del AwaitQueue[list(AwaitQueue.keys())[0]]
+
         time.sleep(1)
 
 
@@ -52,8 +84,9 @@ class Bot(WXBot):
                 elif msg_data == '充值' or msg_data == '冲值':
                     if self.check_bind_status(user_id) != '':
                         op_status[user_id] = 'await'
+                        self.send_msg_by_uid('你已经进入等待队列啦，要轮流来哦~', user_id)
                         # 加入等待列表
-                        AwaitQueue[user_id] = 120
+                        AwaitQueue[user_id] = 121  # 加一秒容错
                 elif msg_data == '解绑':
                     if self.check_bind_status(user_id) != '':
                         bindings[user_id] = ''
@@ -75,7 +108,6 @@ class Bot(WXBot):
                     else:
                         self.send_msg_by_uid('麻烦稍等下哦~别人正在付款呢', user_id)
                         self.send_msg_by_uid('如果你想知道为什么要轮流付款，你可以问我"为什么要等"', user_id)
-                        self.send_msg_by_uid('我会告诉你的哦~', user_id)
                 # 绑定中
                 elif op_status[user_id] == 'binding':
                     if msg_data == '取消':
@@ -108,8 +140,20 @@ class Bot(WXBot):
             self.send_msg_by_uid('欢迎~对我说"绑定"来绑定你的SMD账号吧~', user_id)
 
     def handle_msg_all(self, msg):
-        if msg['content']['type'] == 0:
+        global flag_time_pause
+
+        if msg['content']['type'] == 0 and msg['msg_type_id'] == 4:
+            # 是联系人发的文本消息
             bot.user_msg(msg['content']['data'], msg['user']['id'])
+        elif msg['msg_type_id'] == 5:
+            # 是公众号发的消息
+            flag_time_pause = True
+            match = re.findall(r'微信支付收款(.+?)元', msg['content']['data']['title'])
+            if match and AwaitQueue.__len__() != 0:
+                print('recv ' + match[0])
+                SMDapi.add_value(bindings[AwaitQueue[list(AwaitQueue.keys())[0]]], int(match[0]))
+                Bot.send_msg_by_uid()
+            flag_time_pause = False
 
 
 if __name__ == '__main__':
@@ -129,8 +173,12 @@ if __name__ == '__main__':
     for u in users:
         op_status[u] = 'idle'
     del users
-    print(op_status)
+    timer = threading.Thread(target=queue_time_man)
+    queue_proc = threading.Thread(target=queue_processor)
+    timer.start()
+    queue_proc.start()
     bindings = db.get_bindings()
     bot = Bot()
+    bot.DEBUG = True
     bot.run()
     print('sb')
