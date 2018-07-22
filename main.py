@@ -6,6 +6,7 @@ import time
 import threading
 import re
 
+bot = WXBot
 SMDapi = SMD_api.SMDapi
 op_status = {}
 bindings = {}
@@ -19,13 +20,14 @@ def queue_processor():
 
     while True:
         if AwaitQueue.__len__() != 0:
-            first_item_key = AwaitQueue[list(AwaitQueue.keys())[0]]
+            first_item_key = list(AwaitQueue.keys())[0]
             if AwaitQueue[first_item_key] >= 120:
                 flag_time_pause = True
-                Bot.send_msg_by_uid(Bot(), '轮到你啦~', first_item_key)
-                Bot.send_msg_by_uid(Bot(), '为了不让后面的人等太久，你现在有120秒的时间来完成支付', first_item_key)
-                Bot.send_msg_by_uid(Bot(), '扫描下面的二维码，输入数额来完成充值', first_item_key)
-                Bot.send_img_msg_by_uid(Bot(), 'qrcode.jpg', first_item_key)
+                bot.send_msg_by_uid('轮到你啦~', first_item_key)
+                bot.send_msg_by_uid('为了不让后面的人等太久，你现在有120秒的时间来完成支付', first_item_key)
+                bot.send_msg_by_uid('扫描下面的二维码，输入数额来完成充值', first_item_key)
+                bot.send_img_msg_by_uid('qrcode.jpg', first_item_key)
+                AwaitQueue[first_item_key] = 119
                 flag_time_pause = False
         else:
             pass
@@ -61,9 +63,6 @@ class Bot(WXBot):
             return ''
 
     def user_msg(self, msg_data, user_id):
-        print(op_status)
-        print(user_id in op_status)
-        print(user_id)
 
         if user_id in op_status:
             # 如果不是新用户
@@ -144,17 +143,18 @@ class Bot(WXBot):
 
         if msg['content']['type'] == 0 and msg['msg_type_id'] == 4:
             # 是联系人发的文本消息
-            bot.user_msg(msg['content']['data'], msg['user']['id'])
-        elif msg['msg_type_id'] == 5:
+            self.user_msg(msg['content']['data'], msg['user']['id'])
+        elif msg['msg_type_id'] == 5 or msg['msg_type_id'] == 6:
             # 是公众号发的消息
             flag_time_pause = True
             match = re.findall(r'微信支付收款(.+?)元', msg['content']['data']['title'])
             if match and AwaitQueue.__len__() != 0:
-                print('rec ' + match[0])
-                SMDapi.add_value(bindings[AwaitQueue[list(AwaitQueue.keys())[0]]], int(match[0]))
-                Bot.send_msg_by_uid(Bot(), '支付成功，收到了你的 ' + str(int(match[0])) + 'rmb',
+                SMDapi.add_value(bindings[list(AwaitQueue.keys())[0]], int(match[0]))
+                self.send_msg_by_uid('支付成功，收到了你的 ' + str(int(float(match[0]))) + '软妹币',
                                     AwaitQueue[list(AwaitQueue.keys())[0]])
-                Bot.send_msg_by_uid(Bot(), '谢谢你嗷~', AwaitQueue[list(AwaitQueue.keys())[0]])
+                self.send_msg_by_uid('谢谢你嗷~', AwaitQueue[list(AwaitQueue.keys())[0]])
+                op_status[list(AwaitQueue.keys())[0]] = 'idle'
+                del AwaitQueue[list(AwaitQueue.keys())[0]]
             flag_time_pause = False
 
 
@@ -181,6 +181,6 @@ if __name__ == '__main__':
     queue_proc.start()
     bindings = db.get_bindings()
     bot = Bot()
+    # bot.conf['qr'] = 'tty'
     bot.DEBUG = True
     bot.run()
-    print('sb')
