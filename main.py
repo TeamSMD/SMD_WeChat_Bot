@@ -140,6 +140,7 @@ class Bot(WXBot):
 
     def handle_msg_all(self, msg):
         global flag_time_pause
+        global bot
 
         if msg['content']['type'] == 0 and msg['msg_type_id'] == 4:
             # 是联系人发的文本消息
@@ -149,12 +150,15 @@ class Bot(WXBot):
             flag_time_pause = True
             match = re.findall(r'微信支付收款(.+?)元', msg['content']['data']['title'])
             if match and AwaitQueue.__len__() != 0:
-                SMDapi.add_value(bindings[list(AwaitQueue.keys())[0]], int(match[0]))
-                self.send_msg_by_uid('支付成功，收到了你的 ' + str(int(float(match[0]))) + '软妹币',
-                                    AwaitQueue[list(AwaitQueue.keys())[0]])
-                self.send_msg_by_uid('谢谢你嗷~', AwaitQueue[list(AwaitQueue.keys())[0]])
-                op_status[list(AwaitQueue.keys())[0]] = 'idle'
-                del AwaitQueue[list(AwaitQueue.keys())[0]]
+                if float(match[0]) >= 1.0 and float(match[0]).is_integer():
+                    SMDapi.add_value(bindings[list(AwaitQueue.keys())[0]], int(float(match[0])))
+                    bot.send_msg_by_uid('支付成功，收到了你的 ' + str(int(float(match[0]))) + 'rmb',
+                                        list(AwaitQueue.keys())[0])
+                    bot.send_msg_by_uid('谢谢你嗷~', list(AwaitQueue.keys())[0])
+                    op_status[list(AwaitQueue.keys())[0]] = 'idle'
+                    del AwaitQueue[list(AwaitQueue.keys())[0]]
+                else:
+                    bot.send_msg_by_uid('只能发整数哦~找我们工作人员转会给你吧~', list(AwaitQueue.keys())[0])
             flag_time_pause = False
 
 

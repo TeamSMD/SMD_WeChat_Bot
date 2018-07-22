@@ -809,7 +809,7 @@ class WXBot:
                             self.handle_msg(r)
                 else:
                     print('[DEBUG] sync_check:', retcode, selector)
-                    time.sleep(10)
+                    time.sleep(5)
                 self.schedule()
             except KeyboardInterrupt:
                 exit(0)
