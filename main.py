@@ -138,7 +138,7 @@ class Bot(WXBot):
                 elif op_status[user_id] == 'paying':
                     if msg_data == '取消':
                         op_status[user_id] = 'idle'
-                        self.send_msg_by_uid('得')
+                        self.send_msg_by_uid('得', user_id)
                         del AwaitQueue[user_id]
         else:
             # 是新用户
