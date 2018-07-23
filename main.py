@@ -135,6 +135,11 @@ class Bot(WXBot):
                             op_status[user_id] = 'idle'
                         else:
                             self.send_msg_by_uid('密码不对哦~对我说"取消"可以取消操作哦~', user_id)
+                elif op_status[user_id] == 'paying':
+                    if msg_data == '取消':
+                        op_status[user_id] = 'idle'
+                        self.send_msg_by_uid('得')
+                        del AwaitQueue[user_id]
         else:
             # 是新用户
             op_status[user_id] = 'idle'
