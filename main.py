@@ -23,6 +23,7 @@ def queue_processor():
             first_item_key = list(AwaitQueue.keys())[0]
             if AwaitQueue[first_item_key] >= 120:
                 flag_time_pause = True
+                op_status[first_item_key] = 'paying'
                 bot.send_msg_by_uid('轮到你啦~', first_item_key)
                 bot.send_msg_by_uid('为了不让后面的人等太久，你现在有120秒的时间来完成支付', first_item_key)
                 bot.send_msg_by_uid('扫描下面的二维码，输入数额来完成充值', first_item_key)
@@ -44,7 +45,8 @@ def queue_time_man():
                 if AwaitQueue[list(AwaitQueue.keys())[0]] > 0:
                     AwaitQueue[list(AwaitQueue.keys())[0]] -= 1
                 else:
-                    Bot.send_msg_by_uid(Bot(), '支付超时啦，要重新排队哦~下次要抓紧时间呀', list(AwaitQueue.keys())[0])
+                    bot.send_msg_by_uid('支付超时啦，要重新排队哦~下次要抓紧时间呀', list(AwaitQueue.keys())[0])
+                    op_status[list(AwaitQueue.keys())[0]] = 'idle'
                     del AwaitQueue[list(AwaitQueue.keys())[0]]
 
         time.sleep(1)
@@ -158,7 +160,7 @@ class Bot(WXBot):
                     op_status[list(AwaitQueue.keys())[0]] = 'idle'
                     del AwaitQueue[list(AwaitQueue.keys())[0]]
                 else:
-                    bot.send_msg_by_uid('只能发整数哦~找我们工作人员转会给你吧~', list(AwaitQueue.keys())[0])
+                    bot.send_msg_by_uid('只能发整数哦~找我们工作人员退回给你吧~', list(AwaitQueue.keys())[0])
             flag_time_pause = False
 
 
